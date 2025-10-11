@@ -1,7 +1,8 @@
 ;;; init-dired.el --- -*- lexical-binding: t -*-
 
 ;;; Commentary:
-;; 
+;;
+;; Refs: 
 ;; - https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html
 
 ;;; Code:
@@ -14,7 +15,6 @@
 
   :bind (:map dired-mode-map
          ("C-c C-p" . wdired-change-to-wdired-mode))
-
   :config
   ;; Guess a default target directory
   (setq dired-dwim-target t)
@@ -25,7 +25,6 @@
   
   ;; Show directory first
   (setq dired-listing-switches "-alh --group-directories-first"))
-
 
 
 ;; Quick sort dired buffers via hydra

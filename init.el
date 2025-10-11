@@ -4,40 +4,50 @@
 ;;
 ;; This file is loaded after the package system and GUI is initialized.
 ;;
-;; More infos:
+;; Refs:
 ;; - https://www.gnu.org/software/emacs/manual/html_node/elisp/Startup-Summary.html
 
 ;;; Code:
 
-
-;;
-;; Speed up Startup Process
-;;
-
-
-;; Defer garbage collection further back in the startup process
+;; -----------------------------------------------------------------------------
+;; * Startup optimization
+;; -----------------------------------------------------------------------------
+;; Increase garbage collection threshold to speed up startup.
 (setq gc-cons-threshold most-positive-fixnum)
-
-;; Increase the amount of data which Emacs reads from the process
-(setq read-process-output-max (* 1024 1024)) ;; 1mb
-
 ;; Optimize `auto-mode-alist`
 (setq auto-mode-case-fold nil)
 
+;; -----------------------------------------------------------------------------
+;; * Load better defaults and customization
+;; -----------------------------------------------------------------------------
+;; Load skyz-emacs better defaults and custom settings.
+(require 'skyz-better-defaults)
+(require 'skyz-custom-settings)
 
-;;; Initial phase
-
-;; Changing the location of the "custom file".
-;; Move customization variables to a separate file and load it, avoid filling up init.el with unnecessary variables
-(setq custom-file (locate-user-emacs-file "custom-vars.el"))
-(when (and custom-file
-           (file-exists-p custom-file))
-  (load custom-file nil :nomessage))
+;; -----------------------------------------------------------------------------
+;; * Load skyz-emacs' core libs 
+;; -----------------------------------------------------------------------------
+;; Load skyz-emacs core and configuration modules.
+(require 'skyz-core)
+(skyz-emacs/load-package-manager)
 
 
-;; Add `lisp/' and `config/' to `load-path'. 
-(add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))
-(add-to-list 'load-path (expand-file-name "config/" user-emacs-directory))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ;;; Packages phase
@@ -45,12 +55,6 @@
 ;; Gathering Statistics (from use-package)
 (customize-set-variable 'use-package-compute-statistics t) ; M-x use-package-report
 
-;; Sets default package repositories
-(setq package-archives 
-      '(("melpa" . "https://melpa.org/packages/")        
-       ("org" . "https://orgmode.org/elpa/")
-       ("elpa" . "https://elpa.gnu.org/packages/")
-       ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
 
 ;; Prefer GNU sources and stable versions before development versions from MELPA.
 (customize-set-variable 'package-archive-priorities
@@ -60,57 +64,36 @@
                           ("melpa"  . 0)))  ; if all else fails, get it from melpa
  
 
-;; `package.el' is the built-in package manager in Emacs 24.
-;; However, if you prefer to use `straight.el' or `elpaca.el' to install and manage packages,
-;; you can uncomment one of the lines below to enable it.
-(require 'bootstrap-straight)
-;; (require 'bootstrap-elpaca)
-
 ;; Use the `no-littering' package to fix built-in and third-party package path variables 
 (require 'keep-home-clean)
 
 ;; Install the packages listed in the `package-selected-packages' list.
-(add-to-list 'package-selected-packages 'modus-themes)
 (add-to-list 'package-selected-packages 'slime)
 
-(add-to-list 'package-selected-packages 'dired-quick-sort)
-(add-to-list 'package-selected-packages 'dired-git-info)
-(add-to-list 'package-selected-packages 'nerd-icons-dired)
-(add-to-list 'package-selected-packages 'diredfl)
-(add-to-list 'package-selected-packages 'dired-rsync)
+(require 'pkg-list-ui)
+(require 'pkg-list-dired)
+(require 'pkg-list-org)
+(require 'pkg-list-eshell)
+(require 'pkg-list-completion)
 
-(add-to-list 'package-selected-packages 'org-modern)
-
-(add-to-list 'package-selected-packages 'esh-help)
-(add-to-list 'package-selected-packages 'eshell-z)
-
-(skyz-package-install-selected-packages)
-;;(elpaca-wait)
-
+;; (package-install-selected-packages :noconfirm)
+(skyz-emacs/package-install-selected-packages)
 
 
 ;;; Configuration phase
 
-(require 'skyz-defaults-config)
-(require 'skyz-startup-config)
-
 (require 'init-base)
-(require 'init-font)
+
+(require 'init-ui)
 (require 'init-dired)
 (require 'init-org)
 (require 'init-eshell)
-
+(require 'init-completion)
 
 ;;; Optional configuration
 
-
-;; Themes
-(load-theme 'modus-vivendi t)
-
 ;; Common Lisp
 (setq inferior-lisp-program "sbcl")
-
-
 
 
 (defun start/display-startup-time ()

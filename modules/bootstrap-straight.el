@@ -10,8 +10,10 @@
 
 
 ;;; Bootstrap straight
+(setq package-enable-at-startup nil)
+
 (defvar straight-bootstrap-version 7)
-(defvar straight-base-dir (expand-file-name "cache/" user-emacs-directory))
+(defvar straight-base-dir skyz-emacs/var-directory)
 
 (let ((bootstrap-file
        (expand-file-name
@@ -30,15 +32,13 @@
 
 
 
-;;; Setup skyz-package
-;; Configure crafted-emacs to use straight as package manager. 
-(load (expand-file-name "config/skyz-package-config"
-                        user-emacs-directory))
+;;; Setup skyz-emacs' package settings
+;; Configure skyz-emacs to use straight as package manager. 
+(load (expand-file-name "packages"
+                        skyz-emacs/core-directory))
 
-
-(setq skyz-package-system 'straight)
-(setq skyz-package-installer #'straight-use-package)
-(setq skyz-package-installed-predicate #'straight--installed-p)
+(setq skyz-emacs/package-installer #'straight-use-package)
+(setq skyz-emacs/package-installed-p #'straight--installed-p)
 
 
 ;;; Integration with use-package and package.el
@@ -47,8 +47,8 @@
 ;; - https://github.com/radian-software/straight.el?tab=readme-ov-file#integration-with-packageel
 ;; Ensure packages are installed with `straight.el' by default instead of `package.el'
 (setq straight-enable-use-package-integration t) ;; Enable use-package integration
-(setq straight-use-package-by-default t)         ;; Add :straight t by default in use-package macro (helpfully ignore :ensure t)
-;;(setq straight-use-package-version 'straight)  ;; (For backwards compatibility)
+;;(setq straight-use-package-by-default t)         ;; Add :straight t by default in use-package macro (helpfully ignore :ensure t)
+;;(setq straight-use-package-version 'straight)    ;; (For backwards compatibility)
 
 
 (provide 'bootstrap-straight)

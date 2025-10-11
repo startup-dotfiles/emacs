@@ -9,8 +9,10 @@
 
 
 ;;; Bootstrap elpaca
+(setq package-enable-at-startup nil)
+
 (defvar elpaca-installer-version 0.11)
-(defvar elpaca-directory (expand-file-name "cache/elpaca/" user-emacs-directory))
+(defvar elpaca-directory (expand-file-name "elpaca/" skyz-emacs/var-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
@@ -56,19 +58,18 @@
 
 
 
-;;; Setup skyz-package
-;; Configure crafted-emacs to use straight as package manager. 
-(load (expand-file-name "config/skyz-package-config"
-                        user-emacs-directory))
+;;; Setup skyz-emacs' package settings
+;; Configure skyz-emacs to use elpaca as package manager. 
+(load (expand-file-name "packages"
+                        skyz-emacs/core-directory))
 
-(setq skyz-package-system 'elpaca)
-(setq skyz-package-installer #'elpaca-try)
-(setq skyz-package-installed-predicate #'straight--installed-p)
+(setq skyz-emacs/package-installer #'elpaca-try)
+(setq skyz-emacs/package-installed-predicate #'straight--installed-p)
 
 
 
 ;;; use-package Integration 
-;; See
+;; Refs:
 ;; - https://github.com/progfolio/elpaca/blob/master/doc/manual.md#use-package-integration
 (elpaca elpaca-use-package
   ;; Enable Elpaca support for use-package's :ensure keyword.

@@ -11,11 +11,14 @@
 
 
 (use-package no-littering
+  :straight t
   :init (eval-and-compile
-          (setq no-littering-etc-directory
-                (expand-file-name "etc/" user-emacs-directory))
+          (setq no-littering-etc-directory 
+                (or skyz-emacs/etc-directory
+                    (expand-file-name "etc/" user-emacs-directory)))
           (setq no-littering-var-directory
-                (expand-file-name "cache/" user-emacs-directory))))
+                (or skyz-emacs/var-directory
+                    (expand-file-name "cache/" user-emacs-directory)))))
 
 
 
