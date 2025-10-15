@@ -1,4 +1,4 @@
-;;; early-init.el --- Early Init File -*- lexical-binding: t -*-
+;;; early-init.el --- Early Init File -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;
@@ -72,13 +72,13 @@
 
 ;; Reduce rendering/line scan work for Emacs by not rendering cursors or regions
 ;; in non-focused windows.
-(setq-default cursor-in-non-selected-windows nil)
-(setq highlight-nonselected-windows nil)
+(setopt cursor-in-non-selected-windows nil
+        highlight-nonselected-windows nil)
 
 ;; More performant rapid scrolling over unfontified regions. May cause brief
 ;; spells of inaccurate syntax highlighting right after scrolling, which should
 ;; quickly self-correct.
-(setq fast-but-imprecise-scrolling t)
+(setopt fast-but-imprecise-scrolling t)
 
 ;; ---------------------------------------------------------------------------
 ;; * UI elements & features
@@ -90,23 +90,30 @@
 (push '(menu-bar-lines . 0)   default-frame-alist)
 (push '(tool-bar-lines . 0)   default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
-(menu-bar-mode -1)                 ; Disable the menu bar
-(tool-bar-mode -1)                 ; Disable the tool bar
-(scroll-bar-mode -1)               ; Disable the scroll bar (vertical)
-(horizontal-scroll-bar-mode -1)    ; Disable the scroll bar (horizontal)
+
+;; [COMPAT] Old-style syntax
+;; Prefer using setopt to set user options (Emacs 29.1+)
+(setopt menu-bar-mode nil)              ; Disable the menu bar               
+(setopt tool-bar-mode nil)              ; Disable the tool bar               
+(setopt scroll-bar-mode nil)            ; Disable the scroll bar (vertical)  
+(setopt horizontal-scroll-bar-mode nil) ; Disable the scroll bar (horizontal)
+;(menu-bar-mode -1)               ; Disable the menu bar
+;(tool-bar-mode -1)               ; Disable the tool bar
+;(scroll-bar-mode -1)             ; Disable the scroll bar (vertical)
+;(horizontal-scroll-bar-mode -1)  ; Disable the scroll bar (horizontal)
 
 ;; Suppress GUI features
-(setq use-file-dialog nil)
-(setq use-dialog-box nil)
-(setq inhibit-startup-screen t)   ; Inhibit startup screens and messages
-(setq inhibit-splash-screen t)    ; Inhibit the startup screen  (alias)
-(setq inhibit-startup-message t)  ; Inhibit the startup message (alias)
-(setq inhibit-default-init t)     ; Inhibit loading `default' library     
+(setopt use-file-dialog nil)
+(setopt use-dialog-box nil)
+(setopt inhibit-startup-screen t)   ; Inhibit startup screens and messages
+(setopt inhibit-splash-screen t)    ; Inhibit the startup screen  (alias)
+(setopt inhibit-startup-message t)  ; Inhibit the startup message (alias)
+(setopt inhibit-default-init t)     ; Inhibit loading `default' library     
 
 ;; Resizing the Emacs frame can be an expensive part of changing the font.
 ;; Inhibit this to reduce startup times with fonts that are larger than the system default.
-(setq frame-inhibit-implied-resize t
-      frame-resize-pixelwise t)
+(setopt frame-inhibit-implied-resize t
+        frame-resize-pixelwise t)
 
 ;; ---------------------------------------------------------------------------
 ;; * Package Manager 
@@ -117,13 +124,21 @@
 ;; but after `early-init-file'. You must prevent `package.el' loading packages
 ;; prior to your init-file loading. Also, if you use third-party package managers
 ;; such as `straight.el' and `elpaca.el', disabling them is also necessary.
-(setq package-enable-at-startup nil)
-(setq package-archives nil
-      package-quickstart nil)
+(setopt package-enable-at-startup nil)
+(setopt package-archives nil
+        package-quickstart nil)
+
+;; Change `package.el's default storage location for third-party packages.
+(setopt package-user-dir
+        (expand-file-name "package/" skyz-emacs/var-directory))
+(setopt package-gnupghome-dir
+        (expand-file-name "gnupg/" package-user-dir))
 
 ;; `use-package' is builtin since Emacs 29.1.
-(setq use-package-always-ensure nil)
-(setq use-package-enable-imenu-support t)
+;; Avoid automatically attempting to install packages when they are missing
+;; (using package.el by default)
+(setopt use-package-always-ensure nil) ;; -> :ensure nil
+(setopt use-package-enable-imenu-support t) ;; M-x imenu
 
 ;; ---------------------------------------------------------------------------
 ;; * Native Compilation
@@ -139,9 +154,6 @@
 ;; When using Emacs 29+, the location of the native compilation cache can be
 ;; changed using a function.
 ;; https://github.com/emacscollective/no-littering#native-compilation-cache
-;; TODO: 
-;(add-to-list 'load-path (expand-file-name "lisp/utils" user-emacs-directory))
-;(load (expand-file-name "lisp/utils/paths" user-emacs-directory))
 (when (and (fboundp 'startup-redirect-eln-cache)
            (fboundp 'native-comp-available-p)
            (native-comp-available-p))
@@ -204,3 +216,34 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;(provide 'early-init)
 ;;; early-init.el ends here
+
+;; (package-initialize)   (autoload)
+;; (package-activate-all)
+
+;; Set public API
+
+; (set          symbol newval) -> return newval                              before 21.1
+; (setq        [symbol value]...)                                            before 1.12
+; (setq-local  [variable value]...) (buffer-local)                           before 24.3
+; (set-default [symbol value]...)                                            before 18
+; (setopt      [variable value]...)                                          before 29.1
+; (customize-set-variable variable value &optional comment) -> return value  before 21.1
+; (customize-set-value    variable value &optional comment) -> return value  before 21.1
+; (custom-set-variables &rest args) (used by `custom-file')                  before 21.1
+
+;; Posts:
+;; - https://macowners.club/posts/setq-vs-customize-set-variable/
+;; - https://emacsredux.com/blog/2025/04/06/goodbye-setq-hello-setopt/
+
+;; ------------------------------------------------------ ;;
+;;       Functions        |      Customize interface      ;;
+;; ------------------------------------------------------ ;;
+;; setq                   |  CHANGED outside Customize    ;;
+;; set-default            |  CHANGED outside Customize    ;;
+;; setopt                 |  CHANGED outside Customize    ;;
+;; customize-set-variable |  SET for current session only ;;
+;; ------------------------------------------------------ ;;
+
+;; use-package macro keyword
+;; :custom -> use `customize-set-variable' under the hood
+

@@ -9,10 +9,12 @@
 
 
 ;; Basic dired-mode config
-(use-package dired
-  :straight (:type built-in)
+(skyz-emacs/use-package dired
   :ensure nil
+  :straight (:type built-in)
+  :elpaca nil ;;!compat
 
+  ;; rest of use-package args...
   :bind (:map dired-mode-map
          ("C-c C-p" . wdired-change-to-wdired-mode))
   :config

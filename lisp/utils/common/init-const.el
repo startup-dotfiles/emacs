@@ -36,7 +36,21 @@
   (and (eq window-system 'pgtk) sys/linux-p)
   "Are you running under pure GTK on GNU/Linux device?")
 
+;; -----------------------------------------------------------------------------
+;; * Version check
+;; -----------------------------------------------------------------------------
 
+(defconst emacs/>=29-p
+  (>= emacs-major-version 29)
+  "Emacs is 29 or above.")
+
+(defconst emacs/>=30-p
+  (>= emacs-major-version 30)
+  "Emacs is 30 or above.")
+
+(defconst emacs/>=31-p
+  (>= emacs-major-version 31)
+  "Emacs is 31 or above.")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (provide 'init-const)

@@ -10,7 +10,6 @@
   :group 'emacs
   :link '(url-link :tag "Homepage" "https://github.com/range4-skyz/emacs"))
 
-
 ;;;; ---------------------------------------------------------------------------
 ;;;; * User Info settings
 ;;;; ---------------------------------------------------------------------------
@@ -39,23 +38,6 @@
   :type 'string)
   
 ;; TODO: skyz-emacs/font
-
-
-;;;; ---------------------------------------------------------------------------
-;;;; * Theme settings
-;;;; ---------------------------------------------------------------------------
-
-(defcustom skyz-emacs/theme-alist
-  '((default . modus-vivendi)
-    (dark    . modus-vivendi))
-  "List of themes mapped to internal themes."
-  :group 'skyz-emacs
-  :type '(alistq :key-type (symbol :tag "Theme")
-                :value-type (symbol :tag "Internal theme")))
-
-;; TODO: skyz-emacs/theme
-;; https://github.com/seagle0128/.emacs.d/blob/master/lisp/init-custom.el
-
 
 ;;;; ---------------------------------------------------------------------------
 ;;;; * Directory settings
@@ -90,10 +72,11 @@
   
 
 ;;;; ---------------------------------------------------------------------------
-;;;; * SubGroups custom settings
+;;;; * Subgroups custom settings
 ;;;; ---------------------------------------------------------------------------
 
 (require 'custom-packages "custom/packages")
+(require 'custom-themes   "custom/themes")
 
 
 ;;;; ---------------------------------------------------------------------------
@@ -109,7 +92,12 @@
   (load custom-file nil :nomessage))
 
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (provide 'skyz-custom-settings)
 ;;; skyz-custom-settings.el ends here
+
+; (customize-set-variable variable value &optional comment)
+
+; (custom-set-variables &rest args)
+; (custom-set-faces     &rest args)
+

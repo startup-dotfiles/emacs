@@ -1,4 +1,4 @@
-;;; init.el --- Initialization File -*- no-byte-compile: t lexical-binding: t -*-
+;;; init.el --- Initialization File -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;;; Commentary:
 ;;
@@ -53,15 +53,14 @@
 ;;; Packages phase
 
 ;; Gathering Statistics (from use-package)
-(customize-set-variable 'use-package-compute-statistics t) ; M-x use-package-report
-
+(setopt use-package-compute-statistics t) ; M-x use-package-report
 
 ;; Prefer GNU sources and stable versions before development versions from MELPA.
-(customize-set-variable 'package-archive-priorities
-                        '(("gnu"    . 99)   ; prefer GNU packages
-                          ("nongnu" . 80)   ; use non-gnu packages if not found in GNU elpa
-                          ("stable" . 70)   ; prefer "released" versions from melpa
-                          ("melpa"  . 0)))  ; if all else fails, get it from melpa
+(setopt package-archive-priorities
+        '(("gnu"    . 99)   ; prefer GNU packages
+          ("nongnu" . 80)   ; use non-gnu packages if not found in GNU elpa
+          ("stable" . 70)   ; prefer "released" versions from melpa
+          ("melpa"  . 0)))  ; if all else fails, get it from melpa
  
 
 ;; Use the `no-littering' package to fix built-in and third-party package path variables 
@@ -70,14 +69,16 @@
 ;; Install the packages listed in the `package-selected-packages' list.
 (add-to-list 'package-selected-packages 'slime)
 
-(require 'pkg-list-ui)
-(require 'pkg-list-dired)
-(require 'pkg-list-org)
-(require 'pkg-list-eshell)
-(require 'pkg-list-completion)
+(when (eq 'built-in skyz-emacs/package-manager)
+  (require 'pkg-list-ui)
+  (require 'pkg-list-dired)
+  (require 'pkg-list-org)
+  (require 'pkg-list-eshell)
+  (require 'pkg-list-completion))
 
 ;; (package-install-selected-packages :noconfirm)
 (skyz-emacs/package-install-selected-packages)
+
 
 
 ;;; Configuration phase
@@ -92,8 +93,17 @@
 
 ;;; Optional configuration
 
+;; Themes
+(skyz-emacs/load-theme)
+;(load-theme 'modus-vivendi t)
+;(load-theme 'modus-vivendi-deuteranopia t)
+;(load-theme 'doom-one t)
+;(load-theme 'moe-dark t)
+
 ;; Common Lisp
 (setq inferior-lisp-program "sbcl")
+
+
 
 
 (defun start/display-startup-time ()
@@ -101,8 +111,19 @@
          (ms (* 1000 secs)))
     (message "Emacs loaded in %d ms with %d garbage collections."
              (round ms) gcs-done)))
-
 (add-hook 'emacs-startup-hook #'start/display-startup-time)
 
 
+
+
+
+
+;; Prevents `elpaca-after-init-hook` from running more than once.
+;; https://github.com/progfolio/elpaca/wiki/Caveats-with-after-init-hook-and-emacs-startup-hook
+(when (eq 'elpaca skyz-emacs/package-manager)
+  (setq elpaca-after-init-time (or elpaca-after-init-time (current-time)))
+  (elpaca-wait))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;(provide 'init)
 ;;; init.el ends here

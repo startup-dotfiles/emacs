@@ -16,17 +16,21 @@
   (expand-file-name "bootstrap-elpaca.el" skyz-emacs/modules-directory)
   "Init file for bootstraping elpace.")
 
+;;;; ---------------------------------------------------------------------------
+;;;; * Package settings
+;;;; ---------------------------------------------------------------------------
+
 (defcustom skyz-emacs/package-manager-alist
-  `((built-in  . nil)
+  `((built-in  . "")
     (straight  . ,skyz-emacs/init-straight-file)
     (elpaca    . ,skyz-emacs/init-elpaca-file))
   "A list of the package managers."
   :group 'custom-packages
-  :type '(alist :key-type (symbol :tag "Package manager name")
-                :value-type (file :tag "Package manager config")))
+  :type '(alist :key-type (symbol :tag "PM name")
+                :value-type (file :tag "PM config")))
 
 (defcustom skyz-emacs/package-manager 'built-in
-  "Set package manager for skyz-emacs."
+  "Set package manager for Emacs."
   :group 'custom-packages
   :type `(choice ,@(mapcar
                     (lambda (item)

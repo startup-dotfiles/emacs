@@ -10,10 +10,12 @@
 
 
 ;; Basic Emacs command shell config
-(use-package eshell
-  :straight (:type built-in)
+(skyz-emacs/use-package eshell
   :ensure nil
+  :straight (:type built-in)
+  :elpaca nil ;;!compat
 
+  ;; rest of use-package args...  
   :bind (:map eshell-mode-map
          ([remap recenter-top-bottom] . eshell/clear))
   :config

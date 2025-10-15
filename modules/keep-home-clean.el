@@ -10,8 +10,13 @@
 (setq create-lockfiles nil)     ; Stop creating .# lock files      (.#xxx)
 
 
-(use-package no-littering
+(skyz-emacs/use-package no-littering
+  :ensure t
   :straight t
+  :elpaca (:wait t) ;;!compat: block 
+  ;:ensure (:wait t)
+
+  ; :demand t
   :init (eval-and-compile
           (setq no-littering-etc-directory 
                 (or skyz-emacs/etc-directory
@@ -20,9 +25,7 @@
                 (or skyz-emacs/var-directory
                     (expand-file-name "cache/" user-emacs-directory)))))
 
-
-
-;;; Recent files  
+;;; Recent files
 (require 'recentf)
 (add-to-list 'recentf-exclude
              (recentf-expand-file-name no-littering-var-directory))

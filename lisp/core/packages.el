@@ -14,12 +14,12 @@
 (defvar skyz-emacs/package-installer #'package-install
   "Function to use when installing packages.")
 
-(defvar skyz-emacs/package-installed-p #'package-install-p
+(defvar skyz-emacs/package-installed-p #'package-installed-p
   "Function to use when checking if a package is installed.")
 
 
 ;;;; ---------------------------------------------------------------------------
-;;;; * PACKAGE Base functions
+;;;; * PACKAGE functions
 ;;;; ---------------------------------------------------------------------------
 
 (defun skyz-emacs/package--install-package (package &optional installer-fn predicate-fn)
@@ -42,9 +42,10 @@ Default values for both the PREDICATE-FN and INSTALLER-FN are helid in the
 If `skyz-emacs/package-installer' has been customized, use it to install packages
 one at time from the list `package-selected-packages', otherwise use the built-in
 `package-install-selected-packages', which is purpose built for this."
-  (if (eq #'package-install skyz-emacs/package-installer)
-      (package-install-selected-packages t)
-    (mapc #'skyz-emacs/package--install-package package-selected-packages)))
+  (unless (eq 'package-selected-packages nil)
+    (if (eq #'package-install skyz-emacs/package-installer)
+        (package-install-selected-packages t)
+      (mapc #'skyz-emacs/package--install-package package-selected-packages))))
 
 
 ;;;###autoload
@@ -53,7 +54,6 @@ one at time from the list `package-selected-packages', otherwise use the built-i
 
 If it's `built-in`, initialize Emacs' built-in package manager (package.el).
 Otherwise load the file associated in `skyz-emacs/package-manager-alist' if it exists."
-  (interactive)
   (let ((choice (or (and (boundp 'skyz-emacs/package-manager)
                           skyz-emacs/package-manager)
                      'built-in)))
@@ -76,9 +76,79 @@ Otherwise load the file associated in `skyz-emacs/package-manager-alist' if it e
               (message "Init file for '%s' not found or nil: %s" choice file)))))))))
 
 
+(defun skyz-emacs/package--backend-match-p (keyword backend)
+  "Return non-nil if KEYWORD corresponds to BACKEND symbol."
+  (pcase keyword
+    (:ensure (eq backend 'built-in))
+    (:straight (eq backend 'straight))
+    (:elpaca (eq backend 'elpaca))
+    (_ nil)))
+
+
+(defmacro skyz-emacs/use-package (name &rest args)
+  "Use `use-package' with conditional backend args placed after NAME.
+
+Syntax:
+  (skyz-emacs/use-package <name>
+    [:ensure <val>]
+    [:straight <val>]
+    [:elpaca <val>]
+    ;; then normal use-package keywords...
+    :keyword ...)
+
+Only the backend kvs matching `skyz-emacs/package-manager' are spliced into the
+resulting (use-package NAME ...). Other backend kvs are ignored.
+
+If `skyz-emacs/package-manager' is 'elpaca, convert :elpaca KEY to :ensure KEY."
+  (declare (indent 1))
+  ;; Separate trailing backend kvs (consecutive leading keywords after name)
+  (let (backend-pairs rest to-splice up-args)
+    (setq rest args)
+    (while (and rest (keywordp (car rest))
+                (memq (car rest) '(:ensure :straight :elpaca)))
+      (push (cons (car rest) (cadr rest)) backend-pairs)
+      (setq rest (cddr rest)))
+    (setq backend-pairs (nreverse backend-pairs))
+    (setq up-args rest)
+    ;; Select matching backend pairs
+    (setq to-splice nil)
+    (dolist (pair backend-pairs)
+      (let* ((kw (car pair))
+             (val (cdr pair)))
+        (when (skyz-emacs/package--backend-match-p kw skyz-emacs/package-manager)
+          ;; If backend is elpaca and keyword is :elpaca, emit :ensure instead
+          (cond
+           ((and (eq skyz-emacs/package-manager 'elpaca)
+                 (eq kw :elpaca))
+            (push :ensure to-splice)
+            (push val to-splice))
+           (t
+            (push kw to-splice)
+            (push val to-splice))))))
+    (setq to-splice (nreverse to-splice))
+    ;; Final expansion
+    `(use-package ,name
+       ,@to-splice
+       ,@up-args)))
+
+
+;;;; ---------------------------------------------------------------------------
+;;;; * PACKAGE commands
+;;;; ---------------------------------------------------------------------------
 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (provide 'core-packages)
 ;;; packages.el ends here
+
+; (package-install     pkg &optional dont-select)
+; (package-installed-p pkg &optional min-version)
+
+; (package--initialized)
+; (package-initialize &optional no-activate)
+
+; package-selected-packages
+; (package-install-selected-packages &optional noconfirm)
+
+

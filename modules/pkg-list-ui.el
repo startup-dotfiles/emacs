@@ -7,8 +7,12 @@
 
 ;; Themes
 (add-to-list 'package-selected-packages 'modus-themes)
+(add-to-list 'package-selected-packages 'doom-themes)
+(add-to-list 'package-selected-packages 'moe-theme)
+
 ;; Icons
 (add-to-list 'package-selected-packages 'nerd-icons)
+
 ;; Menus
 ;(add-to-list 'package-selected-packages 'minions)
 

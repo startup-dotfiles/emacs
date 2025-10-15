@@ -11,8 +11,12 @@
 ;;; Bootstrap elpaca
 (setq package-enable-at-startup nil)
 
+;; DEBUG: Disable warning messages (with package.el)
+(when (featurep 'package)
+  (unload-feature 'package t))
+
 (defvar elpaca-installer-version 0.11)
-(defvar elpaca-directory (expand-file-name "elpaca/" skyz-emacs/var-directory))
+(defvar elpaca-directory (expand-file-name "elpaca/" skyz-emacs/var-directory)) ;;!important
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
@@ -56,6 +60,17 @@
 (when (member system-type '(windows-nt ms-dos))
   (elpaca-no-symlink-mode))
 
+;;; Integration with `use-package'
+;; Refs:
+;; - https://github.com/progfolio/elpaca/blob/master/doc/manual.md#use-package-integration
+(elpaca elpaca-use-package
+  ;; Enable :elpaca use-package keyword.
+  (elpaca-use-package-mode)
+  ;; Assume :elpaca t unless otherwise specified.
+  (setq elpaca-use-package-by-default nil ; obsolte since 2024-02-08
+        use-package-always-ensure t))
+
+
 
 
 ;;; Setup skyz-emacs' package settings
@@ -64,20 +79,10 @@
                         skyz-emacs/core-directory))
 
 (setq skyz-emacs/package-installer #'elpaca-try)
-(setq skyz-emacs/package-installed-predicate #'straight--installed-p)
+(setq skyz-emacs/package-installed-p #'elpaca-installed-p)
 
-
-
-;;; use-package Integration 
-;; Refs:
-;; - https://github.com/progfolio/elpaca/blob/master/doc/manual.md#use-package-integration
-(elpaca elpaca-use-package
-  ;; Enable Elpaca support for use-package's :ensure keyword.
-  (elpaca-use-package-mode))
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (provide 'bootstrap-elpaca)
-
 ;;; bootstrap-elpaca.el ends here
 
 

@@ -30,14 +30,19 @@
 (setq interprogram-cut-function 'wl-copy)
 (setq interprogram-paste-function 'wl-paste)
 
-;; Fonts
+;; Fonts (Graphic)
+;; The font displayed in terminal-based Emacs follows the font settings
+;; of the terminal emulator you are using
 (set-face-attribute 'default nil
-                    :font "Sarasa Fixed SC"
+                    ;:font "Sarasa Fixed SC"
+                    :font "JetBrainsMono Nerd Font"
                     :height 120
                     :weight 'regular)
 
 (add-to-list 'default-frame-alist 
-			 '(font . "Sarasa Fixed SC"))
+			 ;'(font . "Sarasa Fixed SC")
+             '(font . "JetBrainsMono Nerd Font"))
+
 
 ;; Line
 (global-visual-line-mode 1)                ; Enable truncated lines
@@ -131,7 +136,7 @@
 
 ;; Auto-revert
 ;; Automatically reload file and show changes if the file has changed.
-(auto-revert-mode 1)        ; (buffer-local) minor mode
+;(auto-revert-mode 1)        ; (buffer-local) minor mode
 (global-auto-revert-mode 1) ; (global) minor mode                  
 (setq revert-without-query (list ".")  ; Do not prompt
       auto-revert-stop-on-user-input nil
@@ -141,6 +146,7 @@
 ;; Show-paren
 ;; Toggle visualization of matching parens.
 (show-paren-mode 1)
+;(setq show-paren-style 'expression)
 (setq show-paren-delay 0.1
       show-paren-highlight-openparen t
       show-paren-when-point-inside-paren t
@@ -148,31 +154,35 @@
 
 ;; Recentf
 ;; Remembering recently edited files.
-(recentf-mode 1)
-(setq recentf-max-saved-items 300)
-(setq recentf-max-menu-item 15)
-(setq recentf-auto-cleanip 'mode)
-(setq recentf-exclude nil)
+;(recentf-mode 1)
+;(setq recentf-max-saved-items 300)
+;(setq recentf-max-menu-items 15)
+;(setq recentf-auto-cleanup 'mode)
+;(setq recentf-exclude nil)
 
 ;; Save-place
 ;; Remembering the last place you visited in a file.
-(if (fboundp 'save-place-mode)
-    (save-place-mode 1)
-  (setq-default save-place t)) ; obsolete in >= 25.1
-(setq save-place-limit 600)
+;(if (fboundp 'save-place-mode)
+;    (save-place-mode 1)
+;  (setq-default save-place t)) ; obsolete in >= 25.1
+;(setq save-place-limit 600)
 
 ;; Savehist
 ;; Presevers the minibuffer history.
-(savehist-mode 1)
-(setq history-length 300)
-(setq savehist-save-minibuffer-history t)
-(setq savehist-autosave-interval 300)
-(setq savehist-additional-variables
-      '(kill-ring                         ; clipboard
-        register-alist                    ; macros
-        mark-ring global-mark-ring        ; marks
-        search-ring regexp-search-ring    ; searches
-        extended-command-history))  
+;(savehist-mode 1)
+;(setq history-length 300)
+;(setq savehist-save-minibuffer-history t)
+;(setq savehist-autosave-interval 300)
+;(setq savehist-additional-variables
+;      '(kill-ring                         ; clipboard
+;        register-alist                    ; macros
+;        mark-ring global-mark-ring        ; marks
+;        search-ring regexp-search-ring    ; searches
+;        extended-command-history))  
+
+
+
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

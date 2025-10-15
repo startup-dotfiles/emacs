@@ -8,32 +8,36 @@
 
 ;;; Code:
 
-;; Basic org-mode config
-(use-package org
-  :straight (:type built-in)
-  :ensure nil
 
-  :custom-face (org-ellipsis ((t (:foreground unspecified))))
-  
-  :hook (((org-babel-after-execute org-mode) . org-redisplay-inline-images) ; display image
-         (org-indent-mode . (lambda()
-                              (diminish 'org-indent-mode)
-                              (make-variable-buffer-local 'show-paren-mode)
-                              (setq show-paren-mode nil))))
-  
-  :config (setq org-todo-keywords
-                '((sequence "TODO(t)" "DOING(i)" "HANGUP(h)" "|" "DONE(d)" "CANCEL(c)")
-                  (sequence "⚑(T)" "🏴(I)" "❓(H)" "|" "✔(D)" "✘(C)")))
-                
-                org-todo-keyword-faces '(("HANGUP" . warning)
-                                         ("❓" . warning))
-                org-priority-faces '((?A . error)
-                                     (?B . warning)
-                                     (?C . success))
-          ;; Babel
-          (setq org-confirm-babel-evaluate nil
-                org-src-fontify-natively t
-                org-src-tab-acts-natively t))
+
+;; Basic org-mode config
+(skyz-emacs/use-package org
+ :ensure nil
+ :straight (:type built-in)
+ :elpaca nil ;;!compat
+ 
+ ;; rest of use-package args...
+ :custom-face (org-ellipsis ((t (:foreground unspecified))))
+
+ :hook (((org-babel-after-execute org-mode) . org-redisplay-inline-images) ; display image
+        (org-indent-mode . (lambda()
+                             (diminish 'org-indent-mode)
+                             (make-variable-buffer-local 'show-paren-mode)
+                             (setq show-paren-mode nil))))
+
+ :config (setq org-todo-keywords
+               '((sequence "TODO(t)" "DOING(i)" "HANGUP(h)" "|" "DONE(d)" "CANCEL(c)")
+                 (sequence "⚑(T)" "🏴(I)" "❓(H)" "|" "✔(D)" "✘(C)")))
+
+               org-todo-keyword-faces '(("HANGUP" . warning)
+                                        ("❓" . warning))
+               org-priority-faces '((?A . error)
+                                    (?B . warning)
+                                    (?C . success))
+         ;; Babel
+         (setq org-confirm-babel-evaluate nil
+               org-src-fontify-natively t
+               org-src-tab-acts-natively t))
 
 
 ;; Prettify UI

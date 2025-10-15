@@ -12,8 +12,12 @@
 ;;; Bootstrap straight
 (setq package-enable-at-startup nil)
 
+;; DEBUG: Disable warning messages (with package.el)
+(when (featurep 'package)
+  (unload-feature 'package t))
+
 (defvar straight-bootstrap-version 7)
-(defvar straight-base-dir skyz-emacs/var-directory)
+(defvar straight-base-dir skyz-emacs/var-directory) ;;!important
 
 (let ((bootstrap-file
        (expand-file-name
@@ -31,6 +35,20 @@
   (load bootstrap-file nil 'nomessage))
 
 
+;;; Integration with `use-package'
+;; Ensure packages are installed with `straight.el' by default instead of `package.el'
+;; Refs: 
+;; - https://github.com/radian-software/straight.el?tab=readme-ov-file#integration-with-use-package-1
+;; - https://github.com/radian-software/straight.el?tab=readme-ov-file#integration-with-packageel
+;; Enable use-package integration
+(setq straight-enable-use-package-integration t)
+;; Assume :straight t unless otherwise specifed (helpfully ignore :ensure keyword)
+(setq straight-use-package-by-default t)
+;(setq straight-use-package-version 'straight) ;; For backwards compatibility 
+
+;; Git default clone depath
+(setq straight-vc-git-default-clone-depth 1)
+
 
 ;;; Setup skyz-emacs' package settings
 ;; Configure skyz-emacs to use straight as package manager. 
@@ -40,17 +58,6 @@
 (setq skyz-emacs/package-installer #'straight-use-package)
 (setq skyz-emacs/package-installed-p #'straight--installed-p)
 
-
-;;; Integration with use-package and package.el
-;; Refs: 
-;; - https://github.com/radian-software/straight.el?tab=readme-ov-file#integration-with-use-package-1
-;; - https://github.com/radian-software/straight.el?tab=readme-ov-file#integration-with-packageel
-;; Ensure packages are installed with `straight.el' by default instead of `package.el'
-(setq straight-enable-use-package-integration t) ;; Enable use-package integration
-;;(setq straight-use-package-by-default t)         ;; Add :straight t by default in use-package macro (helpfully ignore :ensure t)
-;;(setq straight-use-package-version 'straight)    ;; (For backwards compatibility)
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (provide 'bootstrap-straight)
-
 ;;; bootstrap-straight.el ends here

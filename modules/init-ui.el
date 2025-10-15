@@ -5,10 +5,6 @@
 ;;; Code:
 
 
-;; Themes
-(load-theme 'modus-vivendi t)
-
-
 ;; A minor-mode menu for mode-line
 ;(use-package minions
 ;  :hook (after-init . minions-mode))
