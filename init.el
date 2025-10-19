@@ -12,17 +12,18 @@
 ;; -----------------------------------------------------------------------------
 ;; * Startup optimization
 ;; -----------------------------------------------------------------------------
+
 ;; Increase garbage collection threshold to speed up startup.
-(setq gc-cons-threshold most-positive-fixnum)
-;; Optimize `auto-mode-alist`
+;(setq gc-cons-threshold most-positive-fixnum)
+;; A second, case-insensitive pass over `auto-mode-alist' is time wasted.
 (setq auto-mode-case-fold nil)
 
 ;; -----------------------------------------------------------------------------
 ;; * Load better defaults and customization
 ;; -----------------------------------------------------------------------------
 ;; Load skyz-emacs better defaults and custom settings.
-(require 'skyz-better-defaults)
 (require 'skyz-custom-settings)
+(require 'skyz-better-defaults)
 
 ;; -----------------------------------------------------------------------------
 ;; * Load skyz-emacs' core libs 
@@ -47,9 +48,6 @@
 
 
 
-
-
-
 ;;; Packages phase
 
 ;; Gathering Statistics (from use-package)
@@ -57,11 +55,10 @@
 
 ;; Prefer GNU sources and stable versions before development versions from MELPA.
 (setopt package-archive-priorities
-        '(("gnu"    . 99)   ; prefer GNU packages
-          ("nongnu" . 80)   ; use non-gnu packages if not found in GNU elpa
-          ("stable" . 70)   ; prefer "released" versions from melpa
-          ("melpa"  . 0)))  ; if all else fails, get it from melpa
- 
+        '(("gnu"          . 99)   ; prefer GNU packages
+          ("nongnu"       . 80)   ; use non-gnu packages if not found in GNU elpa
+          ;("melpa-stable" . 70)   ; prefer "released" versions from melpa
+          ("melpa"        . 0)))  ; if all else fails, get it from melpa
 
 ;; Use the `no-littering' package to fix built-in and third-party package path variables 
 (require 'keep-home-clean)
@@ -74,22 +71,21 @@
   (require 'pkg-list-dired)
   (require 'pkg-list-org)
   (require 'pkg-list-eshell)
-  (require 'pkg-list-completion))
+  (require 'pkg-list-completion)
+  (require 'pkg-list-misc))
 
-;; (package-install-selected-packages :noconfirm)
 (skyz-emacs/package-install-selected-packages)
-
 
 
 ;;; Configuration phase
 
 (require 'init-base)
-
 (require 'init-ui)
 (require 'init-dired)
 (require 'init-org)
 (require 'init-eshell)
 (require 'init-completion)
+(require 'init-misc)
 
 ;;; Optional configuration
 
@@ -104,18 +100,14 @@
 (setq inferior-lisp-program "sbcl")
 
 
-
-
 (defun start/display-startup-time ()
+  "Display Emacs startup time, GC count, and number of features."
   (let* ((secs (float-time (time-subtract after-init-time before-init-time)))
-         (ms (* 1000 secs)))
-    (message "Emacs loaded in %d ms with %d garbage collections."
-             (round ms) gcs-done)))
+         (ms (round (* 1000 secs))))
+    (message "Emacs loaded in %d ms with %d garbage collections and %d features loaded."
+             ms gcs-done (length features))))
+
 (add-hook 'emacs-startup-hook #'start/display-startup-time)
-
-
-
-
 
 
 ;; Prevents `elpaca-after-init-hook` from running more than once.
@@ -127,3 +119,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;(provide 'init)
 ;;; init.el ends here
+
+
+; (normal-top-level)

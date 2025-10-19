@@ -15,7 +15,7 @@
   :straight (:type built-in)
   :elpaca nil ;;!compat
 
-  ;; rest of use-package args...  
+  ;; Rest of use-package args...  
   :bind (:map eshell-mode-map
          ([remap recenter-top-bottom] . eshell/clear))
   :config
@@ -42,5 +42,8 @@
 
 
 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (provide 'init-eshell)
 ;;; init-eshell.el ends here

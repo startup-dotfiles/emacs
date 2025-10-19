@@ -42,10 +42,10 @@ Default values for both the PREDICATE-FN and INSTALLER-FN are helid in the
 If `skyz-emacs/package-installer' has been customized, use it to install packages
 one at time from the list `package-selected-packages', otherwise use the built-in
 `package-install-selected-packages', which is purpose built for this."
-  (unless (eq 'package-selected-packages nil)
-    (if (eq #'package-install skyz-emacs/package-installer)
-        (package-install-selected-packages t)
-      (mapc #'skyz-emacs/package--install-package package-selected-packages))))
+  (if (eq #'package-install skyz-emacs/package-installer)
+      (package-install-selected-packages t)
+    (mapc #'skyz-emacs/package--install-package package-selected-packages)))
+
 
 
 ;;;###autoload
@@ -142,13 +142,22 @@ If `skyz-emacs/package-manager' is 'elpaca, convert :elpaca KEY to :ensure KEY."
 (provide 'core-packages)
 ;;; packages.el ends here
 
+
+
+
 ; (package-install     pkg &optional dont-select)
 ; (package-installed-p pkg &optional min-version)
 
+; package-load-list
 ; (package--initialized)
 ; (package-initialize &optional no-activate)
+; (package-activate-all)
+; (package-initialize) === (package-initialize t) -> (package-activate-all)
 
 ; package-selected-packages
 ; (package-install-selected-packages &optional noconfirm)
 
+; (package-quickstart-refresh) -> Generate `package-quickstart-file'.
+; (package-refresh-contents &optional async)
 
+; package-archive-contents

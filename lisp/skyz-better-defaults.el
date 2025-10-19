@@ -5,9 +5,9 @@
 ;;; Code:
 
 ;; Allow for shorter responses: "y" for yes and "n" for no.
-(setq read-answer-short t)
+(setopt read-answer-short t)
 (if (boundp 'use-short-answers)
-    (setq use-short-answers t)
+    (setopt use-short-answers t)
   (advice-add 'yes-or-no-p :override #'y-or-n-p))
 
 ;; Clipboard (Wayland)
@@ -45,140 +45,155 @@
 
 
 ;; Line
-(global-visual-line-mode 1)                ; Enable truncated lines
-(global-display-line-numbers-mode 1)       ; Display line numbers
-(setq display-line-numbers-type 'relative) ; Relative line numbers
-(setq-default display-line-numbers-widen t)
-(setq-default display-line-numbers-width 3)
-(setq-default line-spacing 0.12) ; Set line-spacing
+(setopt global-visual-line-mode t)          ; Enable truncated lines
+(setopt global-display-line-numbers-mode t) ; Display line numbers
+;(global-visual-line-mode 1)                ;;!(COMPAT (<=29.1)) 
+;(global-display-line-numbers-mode 1)       ;;!(COMPAT (<=29.1))
+(setopt display-line-numbers-type 'relative) ; Relative line numbers
+(setopt display-line-numbers-widen t)
+(setopt display-line-numbers-width 3)
+(setopt line-spacing 0.12) ; Set line-spacing
 
 ;; Tab and Space
 ;; Permanently indent with spaces, never with TABs
-(setq-default c-basic-offset   4
-              tab-width        4
-              indent-tabs-mode nil)
+(setopt c-basic-offset   4
+        tab-width        4
+        indent-tabs-mode nil)
 
 ;; Scrolling
-(setq fast-but-imprecise-scrolling t)
-(setq scroll-error-top-bottom t)
-(setq scroll-preserve-screen-position t)
-(setq scroll-conservatively 20)
-(setq scroll-error-top-bottom t)
+(setopt scroll-error-top-bottom t)
+(setopt scroll-preserve-screen-position t)
+(setopt scroll-conservatively 20)
+(setopt scroll-error-top-bottom t)
+(setopt scroll-margin 0)
+(setopt hscroll-margin 2
+        hscroll-step 1)
 (setq auto-window-vscroll nil)
-(setq scroll-margin 0)
-(setq hscroll-margin 2
-      hscroll-step 1)
 
 ;; Mouse
-(setq mouse-wheel-progressive-speed nil) ; Disable progressive speed when scrolling
-(setq mouse-yank-at-point nil)
-;(setq mouse-wheel-tilt-scroll t)
-;(setq mouse-wheel-flip-direction t)
+(setopt mouse-wheel-progressive-speed nil) ; Disable progressive speed when scrolling
+(setopt mouse-yank-at-point nil)
+;(setopt mouse-wheel-tilt-scroll t)
+;(setopt mouse-wheel-flip-direction t)
 
 ;; Uodo/redo
-(setq undo-limit (* 13 160000)
-      undo-strong-limit (* 13 240000)
-      undo-outer-limit (* 13 24000000))
+(setopt undo-limit (* 13 160000)
+        undo-strong-limit (* 13 240000)
+        undo-outer-limit (* 13 24000000))
 
 ;; Modeline
-(display-time)                        ; Show time in modeline
-;(display-time-mode 1)
-(setq display-time-format "%a %T")    ; Set time format
-(setq display-time-24hr-format t)     ; 0 <= hh <= 23 / 1 <= hh <= 12 AM/PM
-;(setq display-time-interval 1)
-;(setq display-time-default-load-average nil)
-(run-with-timer 0 1 (lambda () (display-time-mode 1))) ; Update time pre-second 
+(display-time)                       ; Show time in modeline
+(setopt display-time-format "%a %T") ; Set time format
+(setopt display-time-24hr-format t)  ; 0 <= hh <= 23 / 1 <= hh <= 12 AM/PM
+(setopt display-time-interval 1)
+(setopt display-time-default-load-average nil)
+(run-with-timer 0 1 (lambda ()
+                      ;(display-time-mode 1) ;;!(COMPAT (<=29.1))
+                      (setopt display-time-mode t))) ; Update time pre-second 
 
 ;; Minibuffer
-(setq enable-recursive-minibuffers t) ; Allow nested minibuffers
+(setopt enable-recursive-minibuffers t) ; Allow nested minibuffers
 
 ;; Completion
-(setq completion-cycle-threshold 1)
-(setq completions-detailed t)
-(setq completions-group t)
-(setq completions-max-height 20)
-(setq completions-format 'one-column)
-(setq completion-styles '(basic initials substring))
-(setq completion-auto-help 'always)
-(setq completion-auto-select 'second-tab)
+(setopt completion-cycle-threshold 1)
+(setopt completions-detailed t)
+(setopt completions-group t)
+(setopt completions-max-height 20)
+(setopt completions-format 'one-column)
+(setopt completion-styles '(basic initials substring))
+(setopt completion-auto-help 'always)
+(setopt completion-auto-select 'second-tab)
 
 ;; Files
-(auto-save-visited-mode 1) ; Auto-save files at an interval
-(setq delete-by-moving-to-trash (not noninteractive)) ; Deleting files go to OS's trash folder
-(setq remote-file-name-inhibit-delete-by-moving-to-trash t)
-(setq find-file-suppress-same-file-warnings t)
+;(auto-save-visited-mode 1) ;;!(KEEP-ONLY)
+(setopt auto-save-visited-mode t) ; Auto-save files at an interval
+(setopt delete-by-moving-to-trash 
+        (not noninteractive)) ; Deleting files go to OS's trash folder
+(setopt remote-file-name-inhibit-delete-by-moving-to-trash t)
+(setopt find-file-suppress-same-file-warnings t)
 
 ;; Misc
-(setq set-mark-command-repeat-pop t) ; Repeating C-SPC after popping mark pops it again
+(setopt set-mark-command-repeat-pop t) ; Repeating C-SPC after popping mark pops it again
 
 ;; Backups / Lockfiles
-(setq make-backup-files nil)    ; Stop creating  ~ backup files    (~xxx)
-(setq create-lockfiles nil)     ; Stop creating .# lock files      (.#xxx)
+(setopt make-backup-files nil)    ; Stop creating  ~ backup files    (~xxx)
+(setopt create-lockfiles nil)     ; Stop creating .# lock files      (.#xxx)
 
 ;; Basic modes
-(setq-default major-mode 'text-mode)
-(column-number-mode 1)     ; Show column number on mode line
-(blink-cursor-mode -1)     ; Don't blink cursor
-(delete-selection-mode 1)  ; Select text and delete it by typing.
+(setopt initial-major-mode 'fundamental-mode)
+(setopt major-mode 'text-mode)
+(setopt column-number-mode t)     ; Show column number on mode line
+(setopt blink-cursor-mode nil)    ; Don't blink cursor
+(setopt delete-selection-mode t)  ; Select text and delete it by typing.
+;(column-number-mode 1)     ;;!(COMPAT (<=29.1))
+;(blink-cursor-mode -1)     ;;!(COMPAT (<=29.1))
+;(delete-selection-mode 1)  ;;!(COMPAT (<=29.1))
 
 ;; Electric
 ;; Provide a set of automated editing assistance features.
-(electric-indent-mode -1) ; Turn off the weird indenting that Emacs does by default
-(electric-pair-mode 1)    ; Turns on automatic parens pairing
+(setopt electric-indent-mode nil) ; Turn off the weird indenting that Emacs does by default
+(setopt electric-pair-mode t)     ; Turns on automatic parens pairing
+;(electric-indent-mode -1) ;;!(COMPAT (<=29.1))
+;(electric-pair-mode 1)    ;;!(COMPAT (<=29.1))
 
 ;; Auto-save
 (auto-save-mode 1)
-(setq auto-save-default nil) ; Stop creating ## auto save files (#xxx#)
-(setq auto-save-no-message t)
+(setopt auto-save-default nil) ; Stop creating ## auto save files (#xxx#)
+(setopt auto-save-no-message t)
 (setq auto-save-include-big-deletions t)
-(setq kill-buffer-delete-auto-save-files t)
-(setq kill-do-not-save-duplicates t) ; Remove duplicates from the kill ring to reduce clutter
+(setopt kill-buffer-delete-auto-save-files t)
+(setopt kill-do-not-save-duplicates t) ; Remove duplicates from the kill ring to reduce clutter
 
 ;; Auto-revert
 ;; Automatically reload file and show changes if the file has changed.
-;(auto-revert-mode 1)        ; (buffer-local) minor mode
-(global-auto-revert-mode 1) ; (global) minor mode                  
-(setq revert-without-query (list ".")  ; Do not prompt
-      auto-revert-stop-on-user-input nil
-      auto-revert-verbose t)
-(setq global-auto-revert-non-file-buffers t) ; Revert Dired and other buffers
+(setopt global-auto-revert-mode t)
+;(global-auto-revert-mode 1) ;;!(COMPAT (<=29.1))
+(setopt revert-without-query (list ".")  ; Do not prompt
+        auto-revert-stop-on-user-input nil
+        auto-revert-verbose t)
+(setopt global-auto-revert-non-file-buffers t) ; Revert Dired and other buffers
 
 ;; Show-paren
 ;; Toggle visualization of matching parens.
-(show-paren-mode 1)
+(setopt show-paren-mode t)
+;(show-paren-mode 1) ;;!(COMPAT (<=29.1))
+(setopt show-paren-delay 0.1
+        show-paren-highlight-openparen t
+        show-paren-when-point-inside-paren t
+        show-paren-when-point-in-periphery t)
 ;(setq show-paren-style 'expression)
-(setq show-paren-delay 0.1
-      show-paren-highlight-openparen t
-      show-paren-when-point-inside-paren t
-      show-paren-when-point-in-periphery t)
+
 
 ;; Recentf
 ;; Remembering recently edited files.
-;(recentf-mode 1)
-;(setq recentf-max-saved-items 300)
-;(setq recentf-max-menu-items 15)
-;(setq recentf-auto-cleanup 'mode)
-;(setq recentf-exclude nil)
+;(setopt recentf-mode t)
+;;(recentf-mode 1) ;;!(COMPAT (<=29.1))
+;(setopt recentf-max-saved-items 300)
+;(setopt recentf-max-menu-items 15)
+;(setopt recentf-auto-cleanup 'mode)
+;(setopt recentf-exclude nil)
 
 ;; Save-place
 ;; Remembering the last place you visited in a file.
 ;(if (fboundp 'save-place-mode)
-;    (save-place-mode 1)
-;  (setq-default save-place t)) ; obsolete in >= 25.1
-;(setq save-place-limit 600)
+;     (setopt save-place-mode t)
+;     ;(save-place-mode 1) ;;!(COMPAT (<=29.1))
+;  (setopt save-place t)) ; obsolete in >= 25.1
+;(setopt save-place-limit 600)
 
 ;; Savehist
 ;; Presevers the minibuffer history.
-;(savehist-mode 1)
-;(setq history-length 300)
-;(setq savehist-save-minibuffer-history t)
-;(setq savehist-autosave-interval 300)
-;(setq savehist-additional-variables
-;      '(kill-ring                         ; clipboard
-;        register-alist                    ; macros
-;        mark-ring global-mark-ring        ; marks
-;        search-ring regexp-search-ring    ; searches
-;        extended-command-history))  
+;(setopt savehist-mode t)
+;;(savehist-mode 1) ;;!(COMPAT (<=29.1))
+;(setopt history-length 300)
+;(setopt savehist-save-minibuffer-history t)
+;(setopt savehist-autosave-interval 300)
+;(setopt savehist-additional-variables
+;      '(kill-ring                                  ; clipboard
+;        register-alist                             ; macros
+;        mark-ring global-mark-ring                 ; marks
+;        search-ring regexp-search-ring             ; searches
+;        command-history extended-command-history)) ; commands  
 
 
 
@@ -188,3 +203,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (provide 'skyz-better-defaults)
 ;;; skyz-better-defaults.el ends here
+
+
+;; Modes
+
+; *-mode
+; (*-mode &optional arg) (command)

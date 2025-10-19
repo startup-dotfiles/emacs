@@ -96,8 +96,60 @@
 (provide 'skyz-custom-settings)
 ;;; skyz-custom-settings.el ends here
 
-; (customize-set-variable variable value &optional comment)
 
-; (custom-set-variables &rest args)
-; (custom-set-faces     &rest args)
 
+;;; Set public API
+;; Refs:
+;; - https://www.gnu.org/software/emacs/manual/html_node/elisp/Setting-Variables.html
+;; Posts:
+;; - https://macowners.club/posts/setq-vs-customize-set-variable/
+;; - https://emacsredux.com/blog/2025/04/06/goodbye-setq-hello-setopt/
+;; - https://emacs-china.org/t/user-option-setq-setopt-custom-set-default-customize-set-value-customize-set-variable/26000/4
+
+; (setq         [symbol value]...)                                           before 1.12
+; (setq-default [variable value]...)                                         before 18
+; (set           symbol newval) -> return newval                             before 21.1
+; (set-default  [symbol value]...)                                           before 18
+; (setq-local   [variable value]...) (buffer-local)                          before 24.3
+; (setopt       [variable value]...)                                         before 29.1
+
+
+;;; Customize Commands (autoload)
+;; You can set user options in the Customize interface or run the
+;; customize-* commands directly.
+
+; (customize) -> Enter Customize interface
+; (customize-saved) -> Enter Customize inferface (all saved options and faces)
+; (customize-set-variable  variable value &optional comment) -> return value  before 21.1
+; (customize-set-value     variable value &optional comment) -> return value  before 21.1
+; (customize-save-variable variable value &optional comment) -> return value
+; ...
+
+
+;; Applying Customizations
+
+; (custom-set-variables &rest args) (used by `custom-file')                  before 21.1
+; (custom-set-faces     &rest args) (used by `custom-file')
+; (custom-theme-set-variables theme &rest args)
+; (custom-theme-set-faces     theme &rest args)
+
+; (custom-set-variables &rest args) === (custom-theme-set-variables 'user &rest args)
+; (custom-set-faces     &rest args) === (custom-theme-set-faces     'user &rest args)
+
+; (custom-set-default  variable value) (`defcustom' :set default function)  from custom.el
+
+
+;; ----------------------------------------------------------- ;;
+;;       Functions        |      Customize interface state     ;;
+;; ----------------------------------------------------------- ;;
+;; setq                   |      CHANGED outside Customize     ;;
+;; set-default            |      CHANGED outside Customize     ;;
+;; setopt                 |      CHANGED outside Customize     ;;
+;; customize-set-variable |     SET for current session only   ;;
+;; ----------------------------------------------------------- ;;
+
+
+;; (user-pacakge xx
+;;    :custom -> use `customize-set-variable' under the hood)
+;; (defcustom xx
+;;    :set    -> use `custom-set-default' under the hood)

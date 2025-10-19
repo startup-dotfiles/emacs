@@ -123,6 +123,8 @@
 
 
 
-(provide 'init-completion)
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(provide 'init-completion)
 ;;; init-completion.el ends here

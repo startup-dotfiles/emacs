@@ -4,20 +4,9 @@
 ;;
 ;; Emacs 27 introduced early-init.el, which is run before init.el, before
 ;; package and UI initialization happens.
-;;
-;; Refs:
-;; - https://www.gnu.org/software/emacs/manual/html_node/emacs/Early-Init-File.html
-;; - https://www.gnu.org/software/emacs/manual/html_node/emacs/Package-Files.html
 
 
 ;;; Code:
-
-;; 0. site-start.el, default.el, $XDG_CONFIG_PATH/emacs/*
-;; 1. ~/.emacs.d/early-init.el, $XDG_CONFIG_PATH/emacs/early-init.el
-;; 2. .emacs, .emacs.el, ~/.emacs.d/init.el, $XDG_CONFIG_PATH/emacs/init.el
-;(setq site-run-file nil)         ;; Prevent loading site-start.el 
-;(setq inhibit-default-init t)    ;; Prevent loading default.el 
-
 
 ;; -----------------------------------------------------------------------------
 ;; * Load Paths
@@ -80,6 +69,21 @@
 ;; quickly self-correct.
 (setopt fast-but-imprecise-scrolling t)
 
+;; This inhibits fontification while receiving input, which should help a little with
+;; scrolling performance.
+(setq redisplay-skip-fontification-on-input t)
+
+;; Resizing the Emacs frame can be an expensive part of changing the font.
+;; Inhibit this to reduce startup times with fonts that are larger than the system default.
+(setopt frame-inhibit-implied-resize t
+        frame-resize-pixelwise t)
+
+;; Font compacting can be terribly expensive, especially for rendering icon
+;; fonts on Windows. Whether disabling it has a notable affect on Linux and Mac
+;; hasn't been determined, but do it anyway, just in case. This increases memory
+;; usage, however!
+(setq inhibit-compacting-font-caches t)
+
 ;; ---------------------------------------------------------------------------
 ;; * UI elements & features
 ;; ---------------------------------------------------------------------------
@@ -97,23 +101,19 @@
 (setopt tool-bar-mode nil)              ; Disable the tool bar               
 (setopt scroll-bar-mode nil)            ; Disable the scroll bar (vertical)  
 (setopt horizontal-scroll-bar-mode nil) ; Disable the scroll bar (horizontal)
-;(menu-bar-mode -1)               ; Disable the menu bar
-;(tool-bar-mode -1)               ; Disable the tool bar
-;(scroll-bar-mode -1)             ; Disable the scroll bar (vertical)
-;(horizontal-scroll-bar-mode -1)  ; Disable the scroll bar (horizontal)
+;(menu-bar-mode -1)               ;;!(COMPAT (<=29.1))
+;(tool-bar-mode -1)               ;;!(COMPAT (<=29.1))
+;(scroll-bar-mode -1)             ;;!(COMPAT (<=29.1))
+;(horizontal-scroll-bar-mode -1)  ;;!(COMPAT (<=29.1))
 
 ;; Suppress GUI features
 (setopt use-file-dialog nil)
 (setopt use-dialog-box nil)
-(setopt inhibit-startup-screen t)   ; Inhibit startup screens and messages
-(setopt inhibit-splash-screen t)    ; Inhibit the startup screen  (alias)
-(setopt inhibit-startup-message t)  ; Inhibit the startup message (alias)
-(setopt inhibit-default-init t)     ; Inhibit loading `default' library     
-
-;; Resizing the Emacs frame can be an expensive part of changing the font.
-;; Inhibit this to reduce startup times with fonts that are larger than the system default.
-(setopt frame-inhibit-implied-resize t
-        frame-resize-pixelwise t)
+(setopt inhibit-startup-screen t   ; Inhibit startup screens and messages
+        inhibit-startup-message t  ; Inhibit the startup message (alias)
+        inhibit-splash-screen t)   ; Inhibit the startup screen  (alias)
+(setopt inhibit-default-init t)    ; Inhibit loading `default' library     
+;(setopt inhibit-startup-buffer-menu t)
 
 ;; ---------------------------------------------------------------------------
 ;; * Package Manager 
@@ -126,7 +126,7 @@
 ;; such as `straight.el' and `elpaca.el', disabling them is also necessary.
 (setopt package-enable-at-startup nil)
 (setopt package-archives nil
-        package-quickstart nil)
+        package-pinned-packages nil)
 
 ;; Change `package.el's default storage location for third-party packages.
 (setopt package-user-dir
@@ -134,11 +134,16 @@
 (setopt package-gnupghome-dir
         (expand-file-name "gnupg/" package-user-dir))
 
-;; `use-package' is builtin since Emacs 29.1.
-;; Avoid automatically attempting to install packages when they are missing
-;; (using package.el by default)
+;; `use-package' is a built-in macro since Emacs 29.1 for organizing package configuration,
+;; not a package manager. It provides an :ensure keyword which, when non-nil, 
+;; will try to install the package if it’s missing (by default using package.el).
+;; To allow explicit control of the installation process later, the default is nil.
 (setopt use-package-always-ensure nil) ;; -> :ensure nil
 (setopt use-package-enable-imenu-support t) ;; M-x imenu
+
+;; Speed up package loading and loads package only when needed.
+(setopt package-quickstart t)
+(setopt use-package-always-defer t)  ;; -> :defer t
 
 ;; ---------------------------------------------------------------------------
 ;; * Native Compilation
@@ -174,6 +179,9 @@
 (set-selection-coding-system 'utf-8)
 (set-terminal-coding-system  'utf-8)
 
+;; This file is loaded at run-time before `user-init-file'.
+;(setopt site-run-file nil)          ; Prevent loading site-start.el 
+
 ;; Prevent flash of unstyled mode line
 (setq mode-line-format nil)
 
@@ -181,12 +189,6 @@
 ;; prevent the use of stale byte-code. Otherwise, it saves us a little IO time
 ;; to skip the mtime checks on every `*.elc' file.
 (setq load-prefer-newer noninteractive)
-
-;; Font compacting can be terribly expensive, especially for rendering icon
-;; fonts on Windows. Whether disabling it has a notable affect on Linux and Mac
-;; hasn't been determined, but do it anyway, just in case. This increases memory
-;; usage, however!
-(setq inhibit-compacting-font-caches t)
 
 ;; Ignore X resources; its settings would be redundant with the other settings
 ;; in this file and can conflict with later config (particularly where the
@@ -217,33 +219,51 @@
 ;(provide 'early-init)
 ;;; early-init.el ends here
 
-;; (package-initialize)   (autoload)
-;; (package-activate-all)
 
-;; Set public API
+;; Refs:
+;; - https://www.gnu.org/software/emacs/manual/html_node/emacs/Find-Init.html#Find-Init
+;; - https://www.gnu.org/software/emacs/manual/html_node/emacs/Early-Init-File.html
 
-; (set          symbol newval) -> return newval                              before 21.1
-; (setq        [symbol value]...)                                            before 1.12
-; (setq-local  [variable value]...) (buffer-local)                           before 24.3
-; (set-default [symbol value]...)                                            before 18
-; (setopt      [variable value]...)                                          before 29.1
-; (customize-set-variable variable value &optional comment) -> return value  before 21.1
-; (customize-set-value    variable value &optional comment) -> return value  before 21.1
-; (custom-set-variables &rest args) (used by `custom-file')                  before 21.1
+;; `user-init-file' locate in
+;; - $HOME/.emacs.el
+;; - $HOME/.emacs
+;; - $HOME/.emacs.d/init.el
+;; - $HOME_CONFIG_PATH/emacs/init.el (XDG Spec)
 
-;; Posts:
-;; - https://macowners.club/posts/setq-vs-customize-set-variable/
-;; - https://emacsredux.com/blog/2025/04/06/goodbye-setq-hello-setopt/
+;; `user-emacs-directory' locate in 
+;; - $HOME/.emacs.d/
+;; - $XDG_CONFIG_PATH/emacs/ (XDG Spec)
 
-;; ------------------------------------------------------ ;;
-;;       Functions        |      Customize interface      ;;
-;; ------------------------------------------------------ ;;
-;; setq                   |  CHANGED outside Customize    ;;
-;; set-default            |  CHANGED outside Customize    ;;
-;; setopt                 |  CHANGED outside Customize    ;;
-;; customize-set-variable |  SET for current session only ;;
-;; ------------------------------------------------------ ;;
+;; The run-time load order:
+;; - `site-run-file'   -> `user-init-file' -> default.el
+;; - `early-init-file' -> `user-init-file' 
 
-;; use-package macro keyword
-;; :custom -> use `customize-set-variable' under the hood
+;; 0. `site-run-file', default.el, $XDG_CONFIG_PATH/emacs/*
+;; 1. ~/.emacs.d/early-init.el,  $XDG_CONFIG_PATH/emacs/early-init.el
+;; 2. .emacs, .emacs.el, ~/.emacs.d/init.el, $XDG_CONFIG_PATH/emacs/init.el
 
+
+
+;; UI -- Startup
+
+; fancy-splash-image
+
+; frame-title-format
+; icon-title-format 
+
+; idle-update-delay  ; obsoleted since 30.1
+; which-func-update-delay
+
+;; UI -- scrolling
+
+; fast-but-imprecise-scrolling
+; redisplay-skip-fontification-on-input
+
+;; UI -- frames & windows
+
+; cursor-in-non-selected-windows
+; highlight-nonselected-windows
+
+;; UI -- fonts
+
+; inhibit-compacting-font-caches

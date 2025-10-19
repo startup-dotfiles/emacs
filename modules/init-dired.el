@@ -14,19 +14,17 @@
   :straight (:type built-in)
   :elpaca nil ;;!compat
 
-  ;; rest of use-package args...
+  ;; Rest of use-package args...
   :bind (:map dired-mode-map
          ("C-c C-p" . wdired-change-to-wdired-mode))
   :config
   ;; Guess a default target directory
-  (setq dired-dwim-target t)
-  
+  (setopt dired-dwim-target t)
   ;; Always delete and copy recursively
-  (setq dired-recursive-deletes 'always
-        dired-recursive-copies 'always)
-  
+  (setopt dired-recursive-deletes 'always
+          dired-recursive-copies 'always)  
   ;; Show directory first
-  (setq dired-listing-switches "-alh --group-directories-first"))
+  (setopt dired-listing-switches "-alh --group-directories-first"))
 
 
 ;; Quick sort dired buffers via hydra
@@ -64,6 +62,8 @@
 
 
 
-(provide 'init-dired)
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(provide 'init-dired)
 ;;; init-dired.el ends here

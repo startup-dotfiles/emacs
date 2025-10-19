@@ -16,7 +16,8 @@
  :straight (:type built-in)
  :elpaca nil ;;!compat
  
- ;; rest of use-package args...
+ ;; Rest of use-package args...
+ :mode ("\\.org\\'" . org-mode)
  :custom-face (org-ellipsis ((t (:foreground unspecified))))
 
  :hook (((org-babel-after-execute org-mode) . org-redisplay-inline-images) ; display image
@@ -25,19 +26,18 @@
                              (make-variable-buffer-local 'show-paren-mode)
                              (setq show-paren-mode nil))))
 
- :config (setq org-todo-keywords
-               '((sequence "TODO(t)" "DOING(i)" "HANGUP(h)" "|" "DONE(d)" "CANCEL(c)")
-                 (sequence "⚑(T)" "🏴(I)" "❓(H)" "|" "✔(D)" "✘(C)")))
-
-               org-todo-keyword-faces '(("HANGUP" . warning)
-                                        ("❓" . warning))
-               org-priority-faces '((?A . error)
-                                    (?B . warning)
-                                    (?C . success))
+ :config (setopt org-todo-keywords
+                 '((sequence "TODO(t)" "DOING(i)" "HANGUP(h)" "|" "DONE(d)" "CANCEL(c)")
+                   (sequence "⚑(T)" "🏴(I)" "❓(H)" "|" "✔(D)" "✘(C)"))
+                 org-todo-keyword-faces '(("HANGUP" . warning)
+                                          ("❓" . warning))
+                 org-priority-faces '((?A . error)
+                                      (?B . warning)
+                                      (?C . success)))
          ;; Babel
-         (setq org-confirm-babel-evaluate nil
-               org-src-fontify-natively t
-               org-src-tab-acts-natively t))
+         (setopt org-confirm-babel-evaluate nil
+                 org-src-fontify-natively t
+                 org-src-tab-acts-natively t))
 
 
 ;; Prettify UI
@@ -47,6 +47,10 @@
   :init (global-org-modern-mode 1))
 
 
-(provide 'init-org)
 
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(provide 'init-org)
 ;;; init-org.el ends here
